@@ -1,0 +1,39 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: gnw-pub-register-server
+  cloud:
+    config:
+      profile: slave_test2
+      uri: http://172.168.50.80:9100/
+      fail-fast: true
+      retry:
+        max-attempts: 3
+        multiplier: 1.1
+        initial-interval: 1000
+        max-interval: 2000
+  rabbitmq:
+    host: 172.168.50.80
+    port: 5672
+    username: lwpub
+    password: lw_rabbit
+eureka:
+  instance:
+    hostname: service-center-2.com
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+    statusPageUrlPath: ${server.context-path:${SERVER_CONTEXTPATH:}}${management.context-path:${MANAGEMENT_CONTEXTPATH:}}${endpoints.info.path:/manager/login/loginIn}
+    healthCheckUrlPath: ${server.context-path:${SERVER_CONTEXTPATH:}}${management.context-path:${MANAGEMENT_CONTEXTPATH:}}${endpoints.health.path:/health}
+    lease-expiration-duration-in-seconds: 15  #续约更新时间间隔
+    lease-renewal-interval-in-seconds: 5      #续约到期时间
+  server:
+    responseCacheUpdateInvervalMs: 3000     #eureka server刷新readCacheMap的时间
+    eviction-interval-timer-in-ms: 3000     #启用主动失效，并且每次主动失效检测间隔为3s
+  client:
+    healthcheck: 
+      enabled: true
+    serviceUrl:
+      defaultZone: http://service-center-1.com:9000/eureka/
+management:
+  security:
+    enabled: false
