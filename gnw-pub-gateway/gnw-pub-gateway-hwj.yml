@@ -24,7 +24,7 @@ spring:
     # password: '{cipher}AQBEXfyzJONCEdxl6pP7rcucAdSI1qMwrvagNIOjAeM2yzoChEGy5c8hvNtyVsfRblyLjnSgh22Z6KIbMOA7N8ObgoaQT5IKKFU9FrbyPWjklLNYrF/ndOOy4XpTMNqnsH7YOhNveiFo7otfCR+lKPoVbaCy5TlHERnORnFy97QRzOduM4DGHxJvKl3LWUb/EzlaCjXhKSyKQlWgQrQltvyCxMbAaLvynl/1weEHWMZpRPOIxxDEJpNfwTVRsJ/uIix7knsi4U5V8CRCRahHPrf1dpM1EULOoldYA7lqGpCjOD+p4Vh0WJ5hklBq4ijBr22vo5RGIX0yUUwsnQURc8smAtb+hG340KkQGCzhUvMsm+GctgUyeJTjILa5Fxw6kJA='
   redis:
     database: 0
-    host: 127.0.01
+    host: 127.0.0.1
     port: 6379
     password: 
     pool:
@@ -39,7 +39,7 @@ spring:
     sampler:
       percentage: 1
 c3p0:
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/bms?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/bms?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
   user: root
   password: root
   driverClass: com.mysql.jdbc.Driver
