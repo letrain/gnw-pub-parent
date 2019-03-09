@@ -17,7 +17,7 @@ spring:
     password: guest
 eureka:
   instance:
-    hostname: service-center-1.com
+    hostname: service-center-2.com
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
     statusPageUrlPath: ${server.context-path:${SERVER_CONTEXTPATH:}}${management.context-path:${MANAGEMENT_CONTEXTPATH:}}${endpoints.info.path:/manager/login/loginIn}
     healthCheckUrlPath: ${server.context-path:${SERVER_CONTEXTPATH:}}${management.context-path:${MANAGEMENT_CONTEXTPATH:}}${endpoints.health.path:/health}
@@ -30,7 +30,7 @@ eureka:
     healthcheck: 
       enabled: true
     serviceUrl:
-      defaultZone: http://172.0.0.1:9000/eureka/
+      defaultZone: http://172.0.0.1:8000/eureka/
 management:
   security:
     enabled: false
