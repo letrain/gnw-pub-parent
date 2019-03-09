@@ -1,0 +1,164 @@
+server:
+  port: 81
+spring:
+  application:
+    name: gnw-pub-gateway
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: gnw-pub-config-server
+      fail-fast: true
+      retry:
+        max-attempts: 6
+        multiplier: 1.1
+        initial-interval: 1000
+        max-interval: 2000
+      profile: container_dev
+  rabbitmq:
+    host: 172.168.50.56
+    port: 5672
+    username: shemg
+    password: '{cipher}AQCPzgBg1x4tCv8g/8MIMp64739BQ/y1SJYxffUC3/mQMMLccddvxy8YjcntieDN2Ej1L/OzU+oMRYMPof1817Lt/229t8PW+Sy17pIcnxZoVc1TToI4fgF9hq6sBRvObrE+7/onUc19k1TTGUFFib0P8OOKyTAM+HDDd2Xxn+P4oFr3uss37PJObjjjq/+lHLpHRrm9nNos4HG7FO9nmlotuhB3KNgiHkq+4xgv1vvwz9zPiML8CPzQu1CwcWHdZJpN821FCLPd5n/Xs4grei0yHqo99NE4pdiABf/iJ0bVaGj20RR9aucIZl+lDeGhzuThLt7bwh1uHZi8YEE/F4r0j23A7FE4l1ZfJmcZ9Qw2IOZ72r/+kYz7SmJSdSrDH14='
+    virtual-host: /
+  redis:
+    database: 0
+    host: 172.168.50.56
+    port: 6379
+    password: shemg
+    pool:
+      max-total: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+    timeout: 0
+  zipkin:
+    base-url: http://gnw-pub-zipkin:9300
+  sleuth:
+    sampler:
+      percentage: 0.1
+c3p0:
+  jdbcUrl: jdbc:mysql://172.168.50.56:3306/user_center?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+  user: pubdev
+  password: pubdev123
+  driverClass: com.mysql.jdbc.Driver
+  minPoolSize: 5
+  maxPoolSize: 30
+  maxIdleTime: 60
+  acquireIncrement: 3
+  initialPoolSize: 5
+  idleConnectionTestPeriod: 60
+  acquireRetryAttempts: 30
+  acquireRetryDelay: 1000
+  validationQuery: select 'x'
+fileutil:
+  fileSize: '256MB'
+  requestSize: '512MB'
+  uploadTmpPath: '/data/project/gateway-upload-tmp'
+mybatis:
+  mapperLocations : classpath:mybatis/*.xml
+logging:
+  path: /data/logs/java
+  level:
+    root: INFO
+    org.springframework.cloud.sleuth: DEBUG
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+    statusPageUrlPath: ${server.context-path:${SERVER_CONTEXTPATH:}}${management.context-path:${MANAGEMENT_CONTEXTPATH:}}${endpoints.info.path:/manager/login/loginIn}
+    healthCheckUrlPath: ${server.context-path:${SERVER_CONTEXTPATH:}}${management.context-path:${MANAGEMENT_CONTEXTPATH:}}${endpoints.health.path:/health}
+    lease-expiration-duration-in-seconds: 15  #续约更新时间间隔
+    lease-renewal-interval-in-seconds: 5      #续约到期时间
+  client:
+    healthcheck: 
+      enabled: true
+    serviceUrl:
+      defaultZone: http://gnw-pub-register-server1:9000/eureka/,http://gnw-pub-register-server2:9000/eureka/
+management:
+  security:
+    enabled: false      
+baseConfig:
+  isSignCheck: true
+ribbon:
+  ReadTimeout: 20000 # 处理时间
+  ConnectTimeout: 20000 # 连接时间
+  MaxAutoRetries: 0 #最大自动重试次数
+  MaxAutoRetriesNextServer: 1 # 换实例重试次数
+  MaxTotalHttpConnections: 2000 # 最大http连接数，越大越好，但到到达一个临界点之后，就不会提高响应速度了
+  MaxConnectionsPerHost: 1000 # 每个host连接数
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000 # Hystrix超时时间
+          strategy: THREAD
+zuul:
+  okhttp:
+    enabled: true # 使用okhttp方式请求，正常来说okhttp比较速度快一点
+  host:
+    max-per-route-connections: 50   # 每个router最大连接数
+    max-total-connections: 5000     # 最大连接数
+    addHostHeader: true
+  ratelimit: #限流
+    enabled: true
+    repository: REDIS  #对应存储类型（用来存储统计信息）
+    behind-proxy: true  #代理之后
+    default-policy: #可选 - 针对所有的路由配置的策略，除非特别配置了policies
+      limit: 6000 #可选 - 每个刷新时间窗口对应的请求数量限制
+#      quota: 1000 #可选-  每个刷新时间窗口对应的请求时间限制（秒）
+      refresh-interval: 60 # 刷新时间窗口的时间，默认值 (秒)
+      type: #可选 限流方式
+#         - user
+         - origin
+#         - url
+  routes:
+    file:
+      path: /file/**
+      serviceId: gnw-file-consumer
+    green_wechat:
+      path: /wcs/**
+      serviceId: greenbox-wechat-consumer
+    pay:
+      path: /ps/**
+      serviceId: gnw-pay-consumer
+    payman:
+      path: /pm/**
+      serviceId: gnw-pay-manager
+    schedule:
+      path: /sches/**
+      serviceId: gnw-schedule-consumer
+    gnw_wechat:
+      path: /gwcs/**
+      serviceId: gnw-wechat-consumer
+    pub_order_center:
+      path: /poc/**
+      url: https://msdev.dev.zhixike.net/ordercenter
+    gnw_location:
+      path: /ls/**
+      serviceId: gnw-location-consumer
+    gnw_push:
+      path: /pss/**
+      serviceId: gnw-push-consumer
+    gnw_greenguard:
+      path: /greenguard/**
+      serviceId: gnw-greenguard-consumer
+    gnw_push_iosmdm:
+      path: /ims/**
+      serviceId: gnw-push-iosmdm-consumer
+    gnw_device:
+      path: /ds/**
+      serviceId: gnw-device-consumer
+    gnw_user:
+      path: /us/**
+      serviceId: gnw-user-consumer
+    gnw_resource:
+      path: /rs/**
+      serviceId: gnw-resource-consumer
+    gnw_im:
+      path: /is/**
+      serviceId: gnw-im-consumer
