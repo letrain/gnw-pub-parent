@@ -43,4 +43,7 @@ encrypt:
 security:
   user:
     name: pubuser
+    password: pubConfig&^%security:
+  user:
+    name: pubuser
     password: pubConfig&^%
