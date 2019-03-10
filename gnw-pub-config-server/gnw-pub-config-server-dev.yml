@@ -1,5 +1,5 @@
 server:
-  port: 9600
+  port: 9900
 spring:
   profiles: dev
   application:
@@ -41,9 +41,6 @@ encrypt:
     password: ShemgEnc#@!
     secret: ShemgEnc#@!
 security:
-  user:
-    name: pubuser
-    password: pubConfig&^%security:
   user:
     name: pubuser
     password: pubConfig&^%
